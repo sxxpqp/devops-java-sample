@@ -13,9 +13,9 @@ pipeline {
         DOCKER_CREDENTIAL_ID = 'dockerhub-id'
         GITHUB_CREDENTIAL_ID = 'github-id'
         KUBECONFIG_CREDENTIAL_ID = 'demo-kubeconfig'
-        REGISTRY = 'docker.io'
-        DOCKERHUB_NAMESPACE = 'docker_username'
-        GITHUB_ACCOUNT = 'kubesphere'
+        REGISTRY = 'test.bontor.cn:30002'
+        DOCKERHUB_NAMESPACE = 'sxxpqp'
+        GITHUB_ACCOUNT = 'sxxpqp'
         APP_NAME = 'devops-java-sample'
         SONAR_CREDENTIAL_ID = 'sonar-token'
     }
@@ -33,21 +33,6 @@ pipeline {
                     sh 'mvn clean -o -gs `pwd`/configuration/settings.xml test'
                 }
             }
-        }
-
-        stage('sonarqube analysis') {
-          steps {
-            container ('maven') {
-              withCredentials([string(credentialsId: "$SONAR_CREDENTIAL_ID", variable: 'SONAR_TOKEN')]) {
-                withSonarQubeEnv('sonar') {
-                 sh "mvn sonar:sonar -o -gs `pwd`/configuration/settings.xml -Dsonar.login=$SONAR_TOKEN"
-                }
-              }
-              timeout(time: 1, unit: 'HOURS') {
-                waitForQualityGate abortPipeline: true
-              }
-            }
-          }
         }
 
         stage ('build & push') {
@@ -94,8 +79,8 @@ pipeline {
               container ('maven') {
                 input(id: 'release-image-with-tag', message: 'release image with tag?')
                   withCredentials([usernamePassword(credentialsId: "$GITHUB_CREDENTIAL_ID", passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-                    sh 'git config --global user.email "kubesphere@yunify.com" '
-                    sh 'git config --global user.name "kubesphere" '
+                    sh 'git config --global user.email "971944699@qq.com" '
+                    sh 'git config --global user.name "sxxpqp" '
                     sh 'git tag -a $TAG_NAME -m "$TAG_NAME" '
                     sh 'git push http://$GIT_USERNAME:$GIT_PASSWORD@github.com/$GITHUB_ACCOUNT/devops-java-sample.git --tags --ipv4'
                   }
